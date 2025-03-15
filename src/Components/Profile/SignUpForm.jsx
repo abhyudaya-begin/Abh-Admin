@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {setUser} from "../Redux/UserSlice";
 import toast from "react-hot-toast";
 import {
   Calendar,
@@ -22,6 +23,7 @@ import Otp from "./Otp";
 import { useRef } from "react";
 
 import Abhyudaya from "../../assets/Logo-images/Abhyudaya.png";
+import { useDispatch } from "react-redux";
 
 const signUpSchema = z.object({
   fullName: z
@@ -41,14 +43,12 @@ const signUpSchema = z.object({
 });
 
 function SignUpForm({ setIsSignUp }) {
-  const [showPassword, setShowPassword] = useState(false);
   const [isOTPOpen, setIsOTPOpen] = useState(false);
-  const [verified, setVerified] = useState(true);
-  const [image, setImage] = useState(null); // Default Image
-  const [imageUpdated, setIMageUpdated] = useState(false);
+  const [verified, setVerified] = useState(false);
+
   const [clicked, setClicked] = useState(false);
   const [clickedForEmail, setClickedForEmail] = useState(false);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     register,
@@ -59,20 +59,29 @@ function SignUpForm({ setIsSignUp }) {
     resolver: zodResolver(signUpSchema),
     mode: "onSubmit",
   });
-  const email = watch("email", "");
+  const fullName = watch("fullName", "");
 
   const onSubmit = async (data) => {
-    // try {
+    try {
       setClicked(true);
-      toast.success("Signed up successfully !");
-      setIsSignUp(false);
-    // } catch (error) {
-    //   console.log(error);
-    //   toast.error("Sign up Failed");
-    // } 
-    // finally {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_API_URL}admin/user`,
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+
+      dispatch(setUser(res.data.data.user));
+      
+      toast.success(`Welcome ${fullName}`);
+    
+    } catch (error) {
+      console.log(error);
+      toast.error("Sign up Failed");
+    } finally {
       setClicked(false);
-    // }
+    }
   };
 
   const handleFormError = (errors) => {
@@ -86,9 +95,31 @@ function SignUpForm({ setIsSignUp }) {
 
   const sendMail = async () => {
     try {
+      setClickedForEmail(true);
+      if (!fullName) {
+        toast.error("Please enter your full Name first");
+        return;
+      }
+    
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_API_URL}admin/send-email`,
+        { fullName },
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status) {
+        setIsOTPOpen(true);
+        toast.success("OTP sent successfully");
+      }
     } catch (err) {
-    } finally {
-      setClickedForEmail(false);
+      console.log(err)
+    
+        toast.error("Server down !!");
+    }
+    finally{
+      setClickedForEmail(false)
     }
   };
 
@@ -144,7 +175,7 @@ function SignUpForm({ setIsSignUp }) {
         </div>
         {isOTPOpen && (
           <Otp
-            props={{ email, setVerified }}
+            props={{ fullName, setVerified }}
             onClose={() => setIsOTPOpen(false)}
           />
         )}

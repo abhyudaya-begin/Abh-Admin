@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 function Otp({ props, onClose }) {
-  const { email, setVerified } = props;
+  const { fullName, setVerified } = props;
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
@@ -56,9 +56,9 @@ function Otp({ props, onClose }) {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_API_URL}verify/email`,
+        `${import.meta.env.VITE_BACKEND_API_URL}admin/verify-email`,
         { 
-          email, 
+          fullName, 
           otp: otpString 
         },
         {
@@ -78,8 +78,8 @@ function Otp({ props, onClose }) {
   const resendOtp = async () => {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_API_URL}verify/email`,
-        { email },
+        `${import.meta.env.VITE_BACKEND_API_URL}admin/send-email`,
+        { fullName },
         {
           withCredentials: true,
         }
@@ -101,7 +101,7 @@ function Otp({ props, onClose }) {
         </h2>
         <p className="text-white/70 mb-4 text-center">
           Enter the 4-digit code sent to<br />
-          <span className="font-semibold text-white">{email}</span>
+          <span className="font-semibold text-white">Admin Email</span>
         </p>
         
         <div className="flex justify-center gap-2 mb-6">
