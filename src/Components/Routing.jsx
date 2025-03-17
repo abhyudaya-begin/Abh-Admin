@@ -12,6 +12,8 @@ import { Toaster } from "react-hot-toast";
 import Sponsors from "./Sponsors/Sponsors";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import AdminPayment from './Contact/AdminPayment'
+import AdminEvents from './Events/AdminEvents'
 
 
 const ProtectedRoute = ({ children }) => {
@@ -50,6 +52,8 @@ function Routing() {
         <Route path="/contact" element={<ProtectedRoute> <ContactUs />  </ProtectedRoute> } />
         <Route path="/events" element={<ProtectedRoute> <Events />  </ProtectedRoute> } />
         <Route path="/events/:id" element={<ProtectedRoute> <EventDetail />  </ProtectedRoute> } />
+        <Route path="/adminevent" element={<ProtectedRoute> <AdminEvents />  </ProtectedRoute> } />
+        <Route path="/admpay" element={<ProtectedRoute> <AdminPayment />  </ProtectedRoute> } />
 
 
        
