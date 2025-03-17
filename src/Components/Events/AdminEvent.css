@@ -1,0 +1,95 @@
+/* General Styling */
+.event-admin-panel {
+    min-height: 100vh;
+    background-color: #121212;
+    color: white;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Controls (Search & Dropdown) */
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .controls input {
+    padding: 8px;
+    width: 50%;
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+  }
+  
+  /* Dropdown */
+  .event-dropdown {
+    padding: 8px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+  }
+  
+  /* Buttons */
+  .clear-btn {
+    background-color: red;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .clear-btn:hover {
+    background-color: darkred;
+  }
+  
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #222;
+  }
+  
+  th, td {
+    border: 1px solid gray;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #333;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #1a1a1a;
+  }
+  
+  /* Verify Button */
+  .verify-btn {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .verify-btn:hover {
+    background-color: #388e3c;
+  }
+  
+  .unverify-btn {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .unverify-btn:hover {
+    background-color: #e68900;
+  }
+  
