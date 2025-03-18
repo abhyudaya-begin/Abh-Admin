@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import IndexHome from "./homepage/Index-home";
-import ContactUs from "./Contact/ContactUs";
+
 import Members from "./Team/Members";
 import CampusAmbassadorProgram from "./CampusAmbassador/CampusAmbassadorProgram";
 import AuthForm from "./Profile/AuthForm";
@@ -15,6 +15,8 @@ import { useSelector } from "react-redux";
 import AdminPayment from './Contact/AdminPayment';
 import AdminEvents from './Events/AdminEvents';
 import AdminUserDet from './Contact/AdminUserDet';
+import EventAdminPanel from "./Events/AdminEvents";
+import AdminPanel from "./Contact/AdminPayment";
 
 
 const ProtectedRoute = ({ children }) => {
@@ -43,15 +45,14 @@ function Routing() {
 
 
         <Route path="/" element={<ProtectedRoute> <IndexHome />  </ProtectedRoute> } />
-        <Route path="/about" element={<ProtectedRoute> <Members />  </ProtectedRoute> } />
+        {/* <Route path="/about" element={<ProtectedRoute> <Members />  </ProtectedRoute> } />
         <Route
           path="/campus-ambassador"
           element={<ProtectedRoute> <CampusAmbassadorProgram />  </ProtectedRoute> }
-        />
+        /> */}
   
-        <Route path="/Sponsors" element={<ProtectedRoute> <Sponsors />  </ProtectedRoute> } />
-        <Route path="/contact" element={<ProtectedRoute> <ContactUs />  </ProtectedRoute> } />
-        <Route path="/events" element={<ProtectedRoute> <Events />  </ProtectedRoute> } />
+        <Route path="/payment" element={<ProtectedRoute> <AdminPanel />  </ProtectedRoute> } />
+        <Route path="/events" element={<ProtectedRoute> <EventAdminPanel />  </ProtectedRoute> } />
         <Route path="/events/:id" element={<ProtectedRoute> <EventDetail />  </ProtectedRoute> } />
         <Route path="/adminevent" element={<ProtectedRoute> <AdminEvents />  </ProtectedRoute> } />
         <Route path="/admpay" element={<ProtectedRoute> <AdminPayment />  </ProtectedRoute> } />

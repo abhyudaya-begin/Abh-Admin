@@ -12,13 +12,14 @@ const IndexHome = () => {
     <div
       className="flex flex-col select-none overflow-x-hidden gap-30 items-center bg-black text-white"
     >
-      <HeroSection />
-      <SponsorSlider /> {/* Move the new component */}
-      <Hero2Section /> 
+      
+      {/* <HeroSection /> */}
+      <SponsorSlider /> 
+      {/* <Hero2Section />  */}
       <CountDown />
       {/* <ArtistSlider/> */}
-      <Stats/>
-      <ArtistSlider id="artists"/>
+      {/* <Stats/> */}
+      {/* <ArtistSlider id="artists"/> */}
       <Merchandise/>
     </div>
   );

@@ -6,6 +6,7 @@ import {
   FaBars,
   FaTimes,
   FaUser,
+  FaHome
 } from "react-icons/fa";
 import { GoSponsorTiers } from "react-icons/go";
 import { IoMdPhotos } from "react-icons/io";
@@ -47,12 +48,12 @@ const Sidebar = () => {
   }, [location.pathname]);
 
   const navItems = [
-    { id: "profile", icon: <FaUser size={20} color="white"/>, label: "Profile", path: "/profile" },
+    { id: "home", icon: <FaHome size={20} color="white"/>, label: "home", path: "/home" },
    
     { id: "event", icon: <FaCalendarCheck size={20} color="white"/>, label: "Event", path: "/events" },
     { id: "sponsors", icon: <GoSponsorTiers size={25} color="white"/>, label: "Our Sponsors", path: "/Sponsors" },
     { id: "campus-ambassador", icon: <FaUserGraduate size={20} color="white"/>, label: "Campus Ambassador", path: "/campus-ambassador" },
-    { id: "contact", icon: <MdContactMail size={20} color="white"/>, label: "Contact Us", path: "/contact" },
+    { id: "payment", icon: <MdContactMail size={20} color="white"/>, label: "Payment Admin", path: "/payment" },
     { id: "team", icon: <RiTeamFill size={20} color="white"/>, label: "About us", path: "/about" },
   ];
 

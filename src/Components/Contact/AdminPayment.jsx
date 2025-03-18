@@ -1,110 +1,109 @@
-import './Payment.css';
-import { useState } from "react";
+// src/components/AdminPanel/index.jsx
+import React, { useState, useEffect } from "react";
+import TransactionTable from "./TransactionTable";
+import FilterControls from "./FilterControls";
+import LoadingSpinner from "./LoadingSpinner";
+import ErrorMessage from "./ErrorMessage";
+import useTransactions from "./useTransactions";
 
 const AdminPanel = () => {
-  const [transactions, setTransactions] = useState([
-    { id: "TXN123", userId: "ABH001", name: "John Doe", email: "john@example.com", phone: "1234567890", status: "Pending", date: "2025-03-15", events: ["ARCHIVING EMOTIONS", "ART-GALLERY"] },
-    { id: "TXN124", userId: "ABH002", name: "Jane Smith", email: "jane@example.com", phone: "9876543210", status: "Approved", date: "2025-03-14", events: ["Bandish", "Boogiethrill", "Brush Hour"] },
-    { id: "TXN125", userId: "ABH003", name: "Alice Johnson", email: "alice@example.com", phone: "9988776655", status: "Pending", date: "2025-03-16", events: ["Glittering Hands"] },
-    { id: "TXN126", userId: "ABH004", name: "Bob Martin", email: "martin@example.com", phone: "5566778899", status: "Approved", date: "2025-03-12", events: ["Goonj", "Gracing Gestures"] },
-    { id: "TXN127", userId: "ABH005", name: "Charlie Brown", email: "charlie@example.com", phone: "1122334455", status: "Pending", date: "2025-03-17", events: ["Graffiti", "Hair Styling", "Hermosa"] },
-    { id: "TXN1231", userId: "ABH001", name: "Alok", email: "alokk@example.com", phone: "1234567890", status: "Pending", date: "2025-03-15", events: ["ARCHIVING EMOTIONS", "ART-GALLERY"] },
-    { id: "TXN1242", userId: "ABH002", name: "Aditi", email: "aditi@example.com", phone: "9876543210", status: "Approved", date: "2025-03-14", events: ["Bandish", "Boogiethrill", "Brush Hour"] },
-    { id: "TXN1253", userId: "ABH003", name: "Vinayak", email: "alice@example.com", phone: "9988776655", status: "Pending", date: "2025-03-16", events: ["Glittering Hands"] },
-    { id: "TXN1264", userId: "ABH004", name: "Abhishek", email: "abhii@example.com", phone: "5566778899", status: "Approved", date: "2025-03-12", events: ["Goonj", "Gracing Gestures"] },
-    { id: "TXN1275", userId: "ABH005", name: "Chandan", email: "chandan@example.com", phone: "1122334455", status: "Pending", date: "2025-03-17", events: ["Graffiti", "Hair Styling", "Hermosa"] }
-  ]);
-
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  const [selectedDate, setSelectedDate] = useState(""); // New state for date filtering
-
-  const updateStatus = (id) => {
-    setTransactions(transactions.map(txn =>
-      txn.id === id ? { ...txn, status: txn.status === "Pending" ? "Approved" : "Pending" } : txn
-    ));
+  const [selectedDate, setSelectedDate] = useState("");
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: "",
+    message: "",
+    confirmAction: null
+  });
+  
+  const showConfirmModal = (title, message, onConfirm) => {
+    setModalConfig({
+      title,
+      message,
+      confirmAction: onConfirm
+    });
+    setIsModalOpen(true);
   };
 
-  // Apply filters
-  let filteredTransactions = transactions.filter(txn =>
-    txn.id.includes(search) ||
-    txn.userId.includes(search) ||
-    txn.email.toLowerCase().includes(search.toLowerCase()) ||
-    txn.phone.includes(search) ||
-    txn.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Custom hook with modal callback
+  const { 
+    transactions, 
+    displayedTransactions, 
+    loading, 
+    error, 
+    updateTransactionStatus,
+    resetFilters 
+  } = useTransactions(search, filterStatus, selectedDate);
 
-  if (filterStatus !== "All") {
-    filteredTransactions = filteredTransactions.filter(txn => txn.status === filterStatus);
+  const handleClearFilters = () => {
+    setSearch("");
+    setFilterStatus("All");
+    setSelectedDate("");
+    resetFilters();
+  };
+
+  const handleMarkPaid = (trxnId, ABH_ID) => {
+    showConfirmModal(
+      "Confirm Payment",
+      `Are you sure you want to mark transaction ${trxnId} as paid?`,
+      () => {
+        updateTransactionStatus(trxnId, ABH_ID);
+        setIsModalOpen(false);
+      }
+    );
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
-  if (selectedDate) {
-    filteredTransactions = filteredTransactions.filter(txn => txn.date === selectedDate);
+  if (error) {
+    return <ErrorMessage message={error} />;
   }
 
   return (
-    <div className="admin-panel">
-      <div className="controls">
-        <button className="filter-btn" onClick={() => setFilterStatus(filterStatus === "All" ? "Pending" : filterStatus === "Pending" ? "Approved" : "All")}>
-          {filterStatus === "All" ? "All Status" : filterStatus === "Pending" ? "Pending" : "Approved"}
-        </button>
+    <div className="w-full px-4 py-6 bg-gray-900 text-gray-100">
+      <FilterControls
+        search={search}
+        setSearch={setSearch}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        onClear={handleClearFilters}
+      />
 
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="date-picker"
-        />
+      <TransactionTable 
+        transactions={displayedTransactions} 
+        onMarkPaid={handleMarkPaid} 
+      />
 
-        <input
-          type="text"
-          placeholder="Search by Name, Txn ID, User ID, Email, Phone"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <button className="clear-btn" onClick={() => { setSearch(""); setFilterStatus("All"); setSelectedDate(""); }}>
-          Clear All
-        </button>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Txn ID</th>
-            <th>User ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Events</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTransactions.map((txn) => (
-            <tr key={txn.id}>
-              <td>{txn.id}</td>
-              <td>{txn.userId}</td>
-              <td>{txn.name}</td>
-              <td>{txn.email}</td>
-              <td>{txn.phone}</td>
-              <td className={txn.status === "Approved" ? "approved" : "pending"}>{txn.status}</td>
-              <td>{txn.date}</td>
-              <td className="events-list">{txn.events.join(", ")}</td>
-              <td>
-                <button
-                  className={`toggle-btn ${txn.status === "Pending" ? "approve-btn" : "pending-btn"}`}
-                  onClick={() => updateStatus(txn.id)}
-                >
-                  {txn.status === "Pending" ? "Approve" : "Mark Pending"}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Confirmation Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-900/50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-xl font-bold text-gray-100 mb-4">{modalConfig.title}</h3>
+            <p className="text-gray-300 mb-6">{modalConfig.message}</p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="px-4 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                onClick={modalConfig.confirmAction}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
