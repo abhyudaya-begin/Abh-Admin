@@ -110,6 +110,35 @@ const useTransactions = (search, filterStatus, selectedDate) => {
     }
   };
 
+
+  const DeleteTransaction = async (trxnId, ABH_ID) => {
+    try {
+      // Call API to update transaction status
+      console.log(ABH_ID, trxnId)
+      const url = `${import.meta.env.VITE_BACKEND_API_URL}admin/pay-delete`;
+      await axios.post(url, { trxnId, ABH_ID }, {
+        withCredentials: true
+      });
+
+      // Update local state
+      const updatedTransactions = transactions.map((txn) =>
+        txn.trxnId === trxnId ? { ...txn, status: "Paid" } : txn
+      );
+      
+      setTransactions(updatedTransactions);
+      
+      // Also update displayed transactions
+      setDisplayedTransactions(
+        displayedTransactions.map((txn) =>
+          txn.trxnId === trxnId ? { ...txn, status: "Paid" } : txn
+        )
+      );
+    } catch (err) {
+      console.error("Error updating transaction status:", err);
+      setError("Failed to update transaction status");
+    }
+  };
+
   const resetFilters = () => {
     setDisplayedTransactions(transactions);
   };
@@ -120,7 +149,8 @@ const useTransactions = (search, filterStatus, selectedDate) => {
     loading,
     error,
     updateTransactionStatus,
-    resetFilters
+    resetFilters,
+    DeleteTransaction
   };
 };
 

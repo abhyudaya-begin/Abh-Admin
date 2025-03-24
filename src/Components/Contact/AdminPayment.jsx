@@ -35,6 +35,7 @@ const AdminPanel = () => {
     loading, 
     error, 
     updateTransactionStatus,
+    DeleteTransaction,
     resetFilters 
   } = useTransactions(search, filterStatus, selectedDate);
 
@@ -55,6 +56,19 @@ const AdminPanel = () => {
       }
     );
   };
+
+
+  const handleDeleteTrxn = (trxnId, ABH_ID) => {
+    showConfirmModal(
+      "Confirm Deletion",
+      `Are you sure you want to mark transaction ${trxnId} as Deleted?`,
+      () => {
+        DeleteTransaction(trxnId, ABH_ID);
+        setIsModalOpen(false);
+      }
+    );
+  };
+  
 
   if (loading) {
     return <LoadingSpinner />;
@@ -79,6 +93,7 @@ const AdminPanel = () => {
       <TransactionTable 
         transactions={displayedTransactions} 
         onMarkPaid={handleMarkPaid} 
+        onDeleteTrxn= {handleDeleteTrxn}
       />
 
       {/* Confirmation Modal */}
