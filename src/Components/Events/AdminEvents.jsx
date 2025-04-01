@@ -13,25 +13,32 @@ const EventAdminPanel = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}admin/users-events`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_API_URL}admin/users-events`,
+          {
+            withCredentials: true, // Enables sending cookies and credentials
+          }
+        );
+
         const users = response.data.users; // Ensure you correctly access the 'users' array
         console.log(users); // Debugging: Check the structure
-  
+
         // ✅ Declare extractedEvents before using it
         const extractedEvents = new Set();
-  
-        users.forEach(user => {
+
+        users.forEach((user) => {
           if (user.eventsPaid) {
-            Object.values(user.eventsPaid).forEach(eventArray => {
-              if (Array.isArray(eventArray)) { // Ensure it's an array before iterating
-                eventArray.forEach(event => {
+            Object.values(user.eventsPaid).forEach((eventArray) => {
+              if (Array.isArray(eventArray)) {
+                // Ensure it's an array before iterating
+                eventArray.forEach((event) => {
                   extractedEvents.add(event.name);
                 });
               }
             });
           }
         });
-  
+
         setEventList(["All", ...Array.from(extractedEvents)]);
         setParticipants(users);
         setLoading(false);
@@ -41,32 +48,40 @@ const EventAdminPanel = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
   // Toggle verification status
   const toggleVerification = (id) => {
-    setParticipants(participants.map(participant =>
-      participant.id === id ? { ...participant, verified: !participant.verified } : participant
-    ));
+    setParticipants(
+      participants.map((participant) =>
+        participant.id === id
+          ? { ...participant, verified: !participant.verified }
+          : participant
+      )
+    );
   };
 
   // Apply search filter
-  let filteredParticipants = participants.filter(participant =>
-    (participant.id && participant.id.includes(search)) ||
-    (participant.name && participant.name.toLowerCase().includes(search.toLowerCase())) ||
-    (participant.email && participant.email.toLowerCase().includes(search.toLowerCase())) ||
-    (participant.phone && participant.phone.includes(search))
+  let filteredParticipants = participants.filter(
+    (participant) =>
+      (participant.id && participant.id.includes(search)) ||
+      (participant.name &&
+        participant.name.toLowerCase().includes(search.toLowerCase())) ||
+      (participant.email &&
+        participant.email.toLowerCase().includes(search.toLowerCase())) ||
+      (participant.phone && participant.phone.includes(search))
   );
-  
 
   // Apply event filter
   if (selectedEvent !== "All") {
-    filteredParticipants = filteredParticipants.filter(participant =>
-      participant.eventsPaid && Object.values(participant.eventsPaid).some(eventArray =>
-        eventArray.some(event => event.name === selectedEvent)
-      )
+    filteredParticipants = filteredParticipants.filter(
+      (participant) =>
+        participant.eventsPaid &&
+        Object.values(participant.eventsPaid).some((eventArray) =>
+          eventArray.some((event) => event.name === selectedEvent)
+        )
     );
   }
 
@@ -89,11 +104,19 @@ const EventAdminPanel = () => {
           onChange={(e) => setSelectedEvent(e.target.value)}
         >
           {eventList.map((event, index) => (
-            <option key={index} value={event}>{event}</option>
+            <option key={index} value={event}>
+              {event}
+            </option>
           ))}
         </select>
 
-        <button className="clear-btn" onClick={() => { setSearch(""); setSelectedEvent("All"); }}>
+        <button
+          className="clear-btn"
+          onClick={() => {
+            setSearch("");
+            setSelectedEvent("All");
+          }}
+        >
           Clear All
         </button>
       </div>
@@ -117,8 +140,6 @@ const EventAdminPanel = () => {
               <td>{participant.fullName}</td>
               <td>{participant.email}</td>
               <td>{participant.phoneNumber}</td>
-            
-             
             </tr>
           ))}
         </tbody>
